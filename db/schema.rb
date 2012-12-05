@@ -11,7 +11,41 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121129073044) do
+ActiveRecord::Schema.define(:version => 20121205092457) do
+
+  create_table "phonify_messages", :force => true do |t|
+    t.integer "owner_id"
+    t.string  "owner_type"
+    t.integer "subscription_id"
+    t.integer "phone_id"
+    t.string  "campaign_id"
+    t.string  "token"
+  end
+
+  add_index "phonify_messages", ["campaign_id", "token"], :name => "index_phonify_messages_on_campaign_id_and_token"
+  add_index "phonify_messages", ["owner_id", "owner_type"], :name => "index_phonify_messages_on_owner_id_and_owner_type"
+
+  create_table "phonify_phones", :force => true do |t|
+    t.integer "owner_id"
+    t.string  "owner_type"
+    t.string  "campaign_id"
+    t.string  "token"
+  end
+
+  add_index "phonify_phones", ["campaign_id", "token"], :name => "index_phonify_phones_on_campaign_id_and_token"
+  add_index "phonify_phones", ["owner_id", "owner_type"], :name => "index_phonify_phones_on_owner_id_and_owner_type"
+
+  create_table "phonify_subscriptions", :force => true do |t|
+    t.integer "owner_id"
+    t.string  "owner_type"
+    t.integer "phone_id"
+    t.string  "campaign_id"
+    t.string  "token"
+    t.boolean "active"
+  end
+
+  add_index "phonify_subscriptions", ["campaign_id", "token"], :name => "index_phonify_subscriptions_on_campaign_id_and_token"
+  add_index "phonify_subscriptions", ["owner_id", "owner_type"], :name => "index_phonify_subscriptions_on_owner_id_and_owner_type"
 
   create_table "users", :force => true do |t|
     t.string   "name"
