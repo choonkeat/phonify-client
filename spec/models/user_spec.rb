@@ -18,12 +18,27 @@ describe User do
       }.should change(Phonify::Phone, :count)
     end
     it 'should list messages' do
-      user.monthly_subscription.messages.to_a.should == []
+      msg, *others = user.monthly_subscription.messages.to_a
+      msg.class.should == Phonify::Message
+      msg.remote_attributes.should_not be_blank
     end
-    it 'should allow monthly_subscription.messages.create', focus: true do
+    it 'should list local messages (empty)' do
+      user.monthly_subscription.messages(:local).to_a.should == []
+    end
+    it 'should allow monthly_subscription.messages.create' do
       lambda {
         user.monthly_subscription.messages.create(message: "hello world")
       }.should change(Phonify::Message, :count)
+    end
+    describe 'with created message' do
+      before(:each) do
+        user.monthly_subscription.messages.create(message: "hello world")
+      end
+      it 'should list local messages' do
+        msg, *others = user.monthly_subscription.messages(:local).to_a
+        msg.class.should == Phonify::Message
+        msg.remote_attributes.should be_blank
+      end
     end
   end
 
