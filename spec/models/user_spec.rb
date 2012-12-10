@@ -4,6 +4,9 @@ describe User do
   let(:user) { FactoryGirl.create(:user) }
   let(:origin_phone) { { number: "91234567", country: "es" } }
   let(:service_phone){ { number: "77555", country: "es"} }
+  it 'should return nil for monthly_subscription' do
+    user.monthly_subscription.should == nil
+  end
   describe '#create_monthly_subscription' do
     it "should call api" do
       lambda {
@@ -17,10 +20,15 @@ describe User do
         user.create_monthly_subscription(origin: origin_phone, service: service_phone)
       }.should change(Phonify::Phone, :count)
     end
+    it 'should retrieve phone object with token attribute' do
+      user.monthly_subscription.phone.class.should == Phonify::Phone
+      user.monthly_subscription.phone.token.should_not == nil
+    end
     it 'should list messages' do
       msg, *others = user.monthly_subscription.messages.to_a
       msg.class.should == Phonify::Message
       msg.remote_attributes.should_not be_blank
+      msg.token.should_not == nil
     end
     it 'should list local messages (empty)' do
       user.monthly_subscription.messages(:local).to_a.should == []
@@ -38,6 +46,7 @@ describe User do
         msg, *others = user.monthly_subscription.messages(:local).to_a
         msg.class.should == Phonify::Message
         msg.remote_attributes.should be_blank
+        msg.token.should_not == nil
       end
     end
   end
