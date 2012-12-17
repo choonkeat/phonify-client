@@ -4,6 +4,8 @@ describe User do
   let(:user) { FactoryGirl.create(:user) }
   let(:origin_phone) { { number: "91234567", country: "es" } }
   let(:service_phone){ { number: "77555", country: "es"} }
+  let(:origin_phone_msisdn) { "349123456789" }
+  let(:service_phone_msisdn){ "+3477555" }
   it 'should return nil for monthly_subscription' do
     user.monthly_subscription.should == nil
   end
@@ -11,6 +13,11 @@ describe User do
     it "should call api" do
       lambda {
         user.create_monthly_subscription(origin: origin_phone, service: service_phone)
+      }.should change(Phonify::Phone, :count)
+    end
+    it "should call api" do
+      lambda {
+        user.create_monthly_subscription(origin: origin_phone_msisdn, service: service_phone_msisdn)
       }.should change(Phonify::Phone, :count)
     end
   end
